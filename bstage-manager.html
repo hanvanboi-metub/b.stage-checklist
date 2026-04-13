@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>b.stage Manager — Artist Partnership</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#f7f6f2;
+  --surface:#ffffff;
+  --border:#e4e2db;
+  --border-strong:#ccc9bf;
+  --text:#18180f;
+  --text-2:#5a5a50;
+  --text-3:#9a9a8e;
+  --p1:#6c63d4;--p1-light:#eeedfc;--p1-mid:#a9a3e8;--p1-dark:#3c348c;
+  --p2:#0f9068;--p2-light:#e0f5ee;--p2-mid:#5dc8a3;
+  --p3:#b06e12;--p3-light:#faecd8;--p3-mid:#e8a43a;
+  --red:#c93535;
+  --radius:10px;--radius-sm:6px;--radius-lg:14px;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+}
+
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+.screen{display:none;padding:32px 16px 64px;min-height:100vh}
+.screen.active{display:block}
+.wrap{max-width:800px;margin:0 auto}
+
+/* ── STACKED BAR ── */
+.sbar{display:flex;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;border:0.5px solid var(--border);flex:1}
+.sbar .seg{height:100%;transition:width .45s cubic-bezier(.4,0,.2,1);flex-shrink:0}
+.sbar .seg-p1{background:var(--p1)}
+.sbar .seg-p2{background:var(--p2)}
+.sbar .seg-p3{background:var(--p3)}
+
+/* ── BUTTONS ── */
+.btn-primary{font-family:var(--font);font-size:13px;font-weight:500;background:var(--text);color:#fff;border:none;padding:9px 18px;border-radius:99px;cursor:pointer;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.btn-primary:hover{background:#333}
+.btn-ghost{font-family:var(--font);font-size:13px;font-weight:500;background:none;color:var(--text-2);border:0.5px solid var(--border-strong);padding:9px 18px;border-radius:99px;cursor:pointer;transition:all .15s}
+.btn-ghost:hover{border-color:var(--text);color:var(--text)}
+.btn-back{font-family:var(--font);font-size:13px;font-weight:500;background:none;border:0.5px solid var(--border);color:var(--text-2);padding:7px 14px;border-radius:99px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-back:hover{border-color:var(--text);color:var(--text)}
+.btn-reset{font-family:var(--font);font-size:12px;color:var(--text-3);background:none;border:0.5px solid var(--border-strong);padding:6px 12px;border-radius:99px;cursor:pointer;transition:all .15s}
+.btn-reset:hover{border-color:var(--red);color:var(--red)}
+
+/* ═══════════════════════════════
+   DASHBOARD SCREEN
+═══════════════════════════════ */
+.dash-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:28px}
+.dash-header-text .eyebrow{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
+.dash-header-text h1{font-size:28px;font-weight:600;letter-spacing:-.3px;color:var(--text)}
+.dash-header-text .sub{font-size:14px;color:var(--text-2);margin-top:5px;line-height:1.5}
+.dash-header-actions{display:flex;align-items:flex-start;gap:8px;padding-top:4px}
+
+/* Summary board */
+.summary-board{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+.sum-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.sum-n{font-family:var(--mono);font-size:28px;font-weight:500;color:var(--text);line-height:1;margin-bottom:5px}
+.sum-n span{font-size:14px;font-weight:400;opacity:.45}
+.sum-l{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3)}
+
+/* Section label */
+.section-label{font-size:12px;font-weight:500;color:var(--text-3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px}
+
+/* Artist grid */
+.bstage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:40px}
+
+/* Artist card */
+.bstage-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.bstage-card::before{content:'';position:absolute;inset:0;border-radius:inherit;background:var(--bg);opacity:0;transition:opacity .15s}
+.bstage-card:hover{border-color:var(--border-strong);box-shadow:0 4px 20px rgba(0,0,0,.08);transform:translateY(-2px)}
+.bstage-card:hover::before{opacity:0}
+
+.card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.card-avatar{width:40px;height:40px;min-width:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:#fff;letter-spacing:-.5px}
+.card-info{flex:1;min-width:0}
+.card-name{font-size:15px;font-weight:600;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-date{font-size:11px;color:var(--text-3);margin-top:3px}
+.card-delete{position:absolute;top:14px;right:14px;width:26px;height:26px;border-radius:50%;border:0.5px solid var(--border);background:var(--surface);color:var(--text-3);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .15s;font-family:var(--font);line-height:1}
+.bstage-card:hover .card-delete{opacity:1}
+.card-delete:hover{background:#fff3f3;border-color:#f5c0c0;color:var(--red)}
+
+.card-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-pct{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--text-2);min-width:32px;text-align:right}
+
+.card-phases{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.card-phase-dot{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-3)}
+.card-phase-dot .dot{width:6px;height:6px;border-radius:50%}
+.card-count{font-size:12px;color:var(--text-3);padding-top:10px;border-top:0.5px solid var(--border)}
+
+/* Status badges */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.badge-neutral{background:var(--bg);color:var(--text-3);border:0.5px solid var(--border)}
+.badge-progress{background:var(--p1-light);color:var(--p1);border:0.5px solid var(--p1-mid)}
+.badge-done{background:var(--p2-light);color:var(--p2);border:0.5px solid var(--p2-mid)}
+
+/* Empty state */
+.empty-state{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 20px;background:var(--surface);border:0.5px dashed var(--border-strong);border-radius:var(--radius-lg)}
+.empty-icon{font-size:40px;margin-bottom:16px;opacity:.5}
+.empty-title{font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--text-3)}
+
+/* ═══════════════════════════════
+   DETAIL SCREEN
+═══════════════════════════════ */
+.detail-topbar{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.detail-crumb{font-size:13px;color:var(--text-3)}
+.detail-crumb span{color:var(--text-2);font-weight:500}
+
+.header{margin-bottom:24px}
+.header-eyebrow{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.header h1{font-size:26px;font-weight:600;letter-spacing:-.3px;color:var(--text);line-height:1.2}
+.header-sub{font-size:13px;color:var(--text-2);margin-top:6px;line-height:1.5}
+
+.note{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:13px 18px;margin-bottom:24px;font-size:12.5px;color:var(--text-2);line-height:1.6}
+.note strong{color:var(--text);font-weight:500}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.stat{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.stat-n{font-family:var(--mono);font-size:30px;font-weight:500;color:var(--text);line-height:1;margin-bottom:4px}
+.stat-l{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3)}
+
+/* Overall bar */
+.overall{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:28px}
+.overall-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.overall-label{font-size:12px;font-weight:500;color:var(--text-2)}
+.overall-pct{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text)}
+.phase-dots{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.pdot{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3)}
+.pdot-circle{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.pdot-sep{color:var(--border-strong);font-size:10px}
+
+/* Phase blocks */
+.phase{margin-bottom:24px}
+.phase-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-radius:var(--radius) var(--radius) 0 0;border:1.5px solid var(--border);border-bottom:none;background:var(--surface);flex-wrap:wrap}
+.phase-left{display:flex;align-items:center;gap:10px}
+.phase-pill{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:4px 10px;border-radius:99px}
+.phase-title{font-size:15px;font-weight:600;color:var(--text)}
+.phase-right{display:flex;align-items:center;gap:10px;min-width:140px}
+.phase-bar-track{flex:1;height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.phase-bar-fill{height:100%;border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.phase-pct{font-family:var(--mono);font-size:12px;font-weight:500;min-width:32px;text-align:right}
+
+/* Phase color schemes */
+.p1 .phase-head{border-color:var(--p1-mid)}
+.p1 .task-list{border-color:var(--p1-mid)}
+.p1 .task-item{border-top-color:#e8e6f8}
+.p1 .phase-pill{background:var(--p1-light);color:var(--p1)}
+.p1 .phase-pct{color:var(--p1)}
+.p1 .phase-bar-fill{background:var(--p1)}
+.p1 .time-tag{--phase-color:var(--p1);--phase-bg:var(--p1-light)}
+.p1 .cb:checked{background:var(--p1)}
+.p1 .cb:hover:not(:checked){border-color:var(--p1)}
+
+.p2 .phase-head{border-color:var(--p2-mid)}
+.p2 .task-list{border-color:var(--p2-mid)}
+.p2 .task-item{border-top-color:#d8f0e8}
+.p2 .phase-pill{background:var(--p2-light);color:var(--p2)}
+.p2 .phase-pct{color:var(--p2)}
+.p2 .phase-bar-fill{background:var(--p2)}
+.p2 .time-tag{--phase-color:var(--p2);--phase-bg:var(--p2-light)}
+.p2 .cb:checked{background:var(--p2)}
+.p2 .cb:hover:not(:checked){border-color:var(--p2)}
+
+.p3 .phase-head{border-color:var(--p3-mid)}
+.p3 .task-list{border-color:var(--p3-mid)}
+.p3 .task-item{border-top-color:#f5e8d0}
+.p3 .phase-pill{background:var(--p3-light);color:var(--p3)}
+.p3 .phase-pct{color:var(--p3)}
+.p3 .phase-bar-fill{background:var(--p3)}
+.p3 .time-tag{--phase-color:var(--p3);--phase-bg:var(--p3-light)}
+.p3 .cb:checked{background:var(--p3)}
+.p3 .cb:hover:not(:checked){border-color:var(--p3)}
+
+/* Task list */
+.task-list{border:1.5px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);overflow:hidden;background:var(--surface)}
+.task-item{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;border-top:0.5px solid var(--border);transition:background .15s}
+.task-item:first-child{border-top:none}
+.task-item:hover{background:#fafaf8}
+.task-item.completed .task-name{text-decoration:line-through;color:var(--text-3)}
+.task-item.completed .task-desc{color:var(--text-3)}
+.task-item.completed{background:#fafaf8}
+
+.cb{width:18px;height:18px;min-width:18px;margin-top:2px;cursor:pointer;appearance:none;-webkit-appearance:none;border:1.5px solid var(--border-strong);border-radius:4px;background:var(--surface);transition:all .15s;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cb:hover{border-color:var(--text-2)}
+.cb:checked{border-color:transparent}
+.cb:checked::after{content:'';display:block;width:10px;height:7px;background-image:url("data:image/svg+xml,%3Csvg width='10' height='7' viewBox='0 0 10 7' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3L4 6L9 1' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-size:contain}
+
+.task-body{flex:1;min-width:0}
+.task-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.4}
+.task-desc{font-size:13px;color:var(--text-2);line-height:1.55;margin-bottom:10px}
+.task-meta{display:flex;flex-direction:column;gap:7px}
+.time-row{display:flex;align-items:center;gap:7px}
+.time-tag{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:4px 10px 4px 8px;border-radius:6px;color:var(--phase-color,var(--text-2));background:var(--phase-bg,var(--bg));border-left:3px solid var(--phase-color,var(--border-strong));line-height:1.3}
+.launch-tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 10px 4px 8px;border-radius:6px;background:#fff3f3;color:var(--red);border-left:3px solid var(--red);line-height:1.3}
+.links-row{display:flex;gap:6px;flex-wrap:wrap}
+.ref{font-size:11px;color:var(--text-2);text-decoration:none;padding:3px 8px;border-radius:99px;border:0.5px solid var(--border);background:var(--bg);transition:all .15s;display:inline-flex;align-items:center;gap:4px;font-weight:500}
+.ref:hover{border-color:var(--text);color:var(--text)}
+.ref::after{content:'↗';font-size:10px;opacity:.6}
+
+.footer{margin-top:40px;text-align:center;font-size:11px;color:var(--text-3);letter-spacing:.03em}
+
+/* ═══════════════════════════════
+   MODAL
+═══════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;backdrop-filter:blur(2px)}
+.modal-overlay.active{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius-lg);padding:28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:modalIn .2s cubic-bezier(.34,1.56,.64,1)}
+@keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
+.modal-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--text-2);margin-bottom:20px;line-height:1.5}
+.modal-input{width:100%;font-family:var(--font);font-size:14px;color:var(--text);background:var(--bg);border:0.5px solid var(--border-strong);border-radius:var(--radius-sm);padding:11px 14px;outline:none;transition:border-color .15s;margin-bottom:20px;display:block}
+.modal-input:focus{border-color:var(--p1);box-shadow:0 0 0 3px var(--p1-light)}
+.modal-input::placeholder{color:var(--text-3)}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px}
+
+/* ═══════════════════════════════
+   ANIMATIONS
+═══════════════════════════════ */
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(0,0,0,.12)}70%{box-shadow:0 0 0 6px rgba(0,0,0,0)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
+.stat.flash .stat-n{animation:ping .5s ease}
+.anim-fadeup{animation:fadeup .35s ease both}
+.anim-fadein{animation:fadein .25s ease both}
+
+/* ═══════════════════════════════
+   RESPONSIVE
+═══════════════════════════════ */
+@media(max-width:600px){
+  .screen{padding:20px 12px 48px}
+  .dash-header{flex-direction:column;gap:14px}
+  .dash-header-actions{width:100%}
+  .summary-board{grid-template-columns:1fr 1fr;gap:10px}
+  .summary-board .sum-card:last-child{grid-column:span 2}
+  .bstage-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat{padding:14px 12px}
+  .stat-n{font-size:24px}
+  .phase-head{flex-direction:column;align-items:flex-start}
+  .phase-right{width:100%;min-width:unset}
+  .header h1{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ SCREEN: DASHBOARD ═══ -->
+<div id="screen-dashboard" class="screen active">
+  <div class="wrap">
+    <header class="dash-header">
+      <div class="dash-header-text">
+        <div class="eyebrow">Team Artist Partnership</div>
+        <h1>b.stage Manager</h1>
+        <p class="sub">Quản lý tiến độ checklist vận hành cho từng nghệ sĩ.</p>
+      </div>
+      <div class="dash-header-actions">
+        <button class="btn-primary" onclick="openModal()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v9M2 6.5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Thêm b.stage
+        </button>
+      </div>
+    </header>
+
+    <div class="summary-board" id="summary-board"></div>
+    <div class="section-label" id="grid-label" style="display:none"></div>
+    <div class="bstage-grid" id="bstage-grid" style="display:none"></div>
+
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">📋</div>
+      <p class="empty-title">Chưa có b.stage nào</p>
+      <p class="empty-sub">Nhấn "Thêm b.stage" để bắt đầu quản lý tiến độ.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: DETAIL ═══ -->
+<div id="screen-detail" class="screen">
+  <div class="wrap">
+    <div class="detail-topbar">
+      <button class="btn-back" onclick="goToDashboard()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Quay lại
+      </button>
+      <div class="detail-crumb"><span id="detail-crumb-name"></span></div>
+    </div>
+
+    <div class="header">
+      <div class="header-eyebrow">Team Artist Partnership</div>
+      <div class="header-top">
+        <div>
+          <h1 id="detail-title">b.stage Checklist</h1>
+          <p class="header-sub">Quy trình vận hành — Chuẩn bị, triển khai &amp; duy trì sau khi ra mắt.</p>
+        </div>
+        <button class="btn-reset" onclick="resetCurrent()">↺ Reset</button>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Hướng dẫn:</strong> Tích vào ô checkbox để đánh dấu công việc đã hoàn thành. Tiến độ được cập nhật tự động và lưu trên trình duyệt.
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-n" id="s-total">11</div><div class="stat-l">Tổng công việc</div></div>
+      <div class="stat"><div class="stat-n" id="s-done">0</div><div class="stat-l">Đã hoàn thành</div></div>
+      <div class="stat"><div class="stat-n" id="s-pct">0%</div><div class="stat-l">Tiến độ chung</div></div>
+    </div>
+
+    <div class="overall">
+      <div class="overall-top">
+        <span class="overall-label">Tổng tiến độ 3 giai đoạn</span>
+        <span class="overall-pct" id="overall-pct">0%</span>
+      </div>
+      <div class="sbar" id="sbar-main" style="margin-bottom:0"></div>
+      <div class="phase-dots">
+        <div class="pdot"><div class="pdot-circle" style="background:var(--p1)"></div><span id="pd1">Phase 1 — 0%</span></div>
+        <span class="pdot-sep">·</span>
+        <div class="pdot"><div class="pdot-circle" style="background:var(--p2)"></div><span id="pd2">Phase 2 — 0%</span></div>
+        <span class="pdot-sep">·</span>
+        <div class="pdot"><div class="pdot-circle" style="background:var(--p3)"></div><span id="pd3">Phase 3 — 0%</span></div>
+      </div>
+    </div>
+
+    <div id="phases-container"></div>
+
+    <div class="footer">b.stage Manager · Team Artist Partnership · Dữ liệu lưu trên trình duyệt</div>
+  </div>
+</div>
+
+<!-- ═══ MODAL ═══ -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-title">Thêm b.stage mới</div>
+    <div class="modal-sub">Nhập tên nghệ sĩ để tạo một checklist riêng.</div>
+    <input type="text" id="modal-input" class="modal-input" placeholder="Tên nghệ sĩ / b.stage..."
+           onkeydown="if(event.key==='Enter')confirmAdd()">
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Huỷ</button>
+      <button class="btn-primary" onclick="confirmAdd()">Tạo checklist</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   TASK & PHASE DEFINITIONS
+═══════════════════════════════════════ */
+const TASKS = [
+  /* Phase 1 */
+  {
+    phase:1, name:"Yêu cầu mở b.stage mới",
+    desc:"Gửi yêu cầu tạo b.stage mới cho nghệ sĩ, bao gồm việc cấu hình tên miền riêng (custom domain) nếu có.",
+    time:"2–3 ngày · tối thiểu 2 tuần trước ra mắt", icon:"clock",
+    links:[{text:"Submit form request",url:"https://forms.gle/rqjdBtzP7qaBRARc9"}]
+  },
+  {
+    phase:1, name:"Demo nền tảng b.stage",
+    desc:"Chuẩn bị một bản demo b.stage cơ bản để giới thiệu cho đối tác nghệ sĩ. Có thể sử dụng trang demo của Jessica hoặc tạo một bản demo tùy chỉnh.",
+    time:"1 tuần trước buổi gặp khách hàng", icon:"clock",
+    links:[{text:"Jessica Demo",url:"https://jessica.bstage.in/"},{text:"ONEISLAND Demo",url:"https://one-island.bstage.in/"}]
+  },
+  {
+    phase:1, name:"Lên ý tưởng bố cục demo",
+    desc:"Lên ý tưởng về bố cục trang chủ, các trang nội dung (Story, Contents, Shop) và định hướng nghệ thuật phù hợp với hình ảnh của nghệ sĩ. Share Material request cho nghệ sĩ trong lúc chốt layout.",
+    time:"1 tuần làm việc trước khi ra mắt", icon:"clock",
+    links:[{text:"Material Request",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.k1tork3ammtc"}]
+  },
+  {
+    phase:1, name:"Xác định lịch trình ra mắt tính năng",
+    desc:"Thảo luận và thống nhất với đối tác nghệ sĩ về lộ trình ra mắt các tính năng chính (Membership, Merchandise, v.v.) sau khi b.stage đi vào hoạt động.",
+    time:"Trong buổi gặp khách hàng", icon:"clock", links:[]
+  },
+  /* Phase 2 */
+  {
+    phase:2, name:"Setup account admin (internal) và nghệ sĩ (partner)",
+    desc:"Tạo và cấu hình tài khoản quản trị (admin) cho đội ngũ nội bộ và tài khoản đối tác nghệ sĩ (partner) với các quyền hạn phù hợp.",
+    time:"1–2 ngày làm việc sau khi b.stage mở domain", icon:"clock",
+    links:[
+      {text:"Tạo account",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.76q34e8sk7q2"},
+      {text:"Phân quyền Star account",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.g7mtlkprdo9g"},
+      {text:"Phân quyền Admin account",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.a7x8qq5yned6"}
+    ]
+  },
+  {
+    phase:2, name:"Setup trang Home / Content / Shop",
+    desc:"Cấu hình trang chủ (Main Home), trang nội dung (Content Home) và trang cửa hàng (Shop) với các module và nội dung đã thống nhất. Collect asset từ nghệ sĩ.",
+    time:"1–2 ngày · tối thiểu 3–5 ngày trước ra mắt", icon:"clock",
+    links:[
+      {text:"Manage Menu",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.sqr0fhkcstae"},
+      {text:"Custom Page",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.6sqm5bd3944a"},
+      {text:"Design Settings",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.7f4iwrrvzwko"}
+    ]
+  },
+  {
+    phase:2, name:"Schedule (lịch trình)",
+    desc:"Cập nhật lịch hoạt động của nghệ sĩ trên b.stage.",
+    time:"1–2 ngày làm việc trước ngày ra mắt", icon:"clock",
+    links:[{text:"Schedule",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.lzjgbmmh4xu0"}]
+  },
+  {
+    phase:2, name:"Content welcome",
+    desc:"Chuẩn bị và đăng tải các nội dung chào mừng (video giới thiệu, bài viết chào fan, hình ảnh độc quyền) để tạo ấn tượng ban đầu cho người hâm mộ.",
+    launch:true, icon:"clock",
+    links:[{text:"Free content",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.we46snw88j3h"}]
+  },
+  /* Phase 3 */
+  {
+    phase:3, name:"Kế hoạch nội dung",
+    desc:"Xây dựng kế hoạch nội dung dài hạn (hàng tuần/tháng) bao gồm các loại nội dung, tần suất đăng tải và chủ đề phù hợp với chiến lược của nghệ sĩ.",
+    time:"Hàng tháng / Quý", icon:"doc",
+    links:[
+      {text:"Free content",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.we46snw88j3h"},
+      {text:"Paid content",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.btzji7kgr5m3"}
+    ]
+  },
+  {
+    phase:3, name:"Monetize — Shop &amp; Membership",
+    desc:"Tối ưu hóa hiệu quả của cửa hàng (Merchandise) và các gói thành viên (Membership). Bao gồm cập nhật sản phẩm mới, điều chỉnh giá, quản lý danh sách chờ (waiting room) nếu cần.",
+    time:"Membership: 1–2 ngày · Merchandise: 2–3 ngày", icon:"clock",
+    links:[{text:"Shop &amp; Product",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.4loqisjo5c3s"}]
+  },
+  {
+    phase:3, name:"Revise — Đánh giá và điều chỉnh",
+    desc:"Định kỳ đánh giá hiệu suất của b.stage (lượt truy cập, tương tác, doanh thu) và điều chỉnh chiến lược nội dung, vận hành. Sử dụng Datalabs để phân tích dữ liệu.",
+    time:"Hàng tháng / Quý", icon:"doc",
+    links:[{text:"Datalabs",url:"https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.zbtmq0tmeb56"}]
+  }
+];
+
+const TOTAL = TASKS.length; // 11
+
+const PHASES = [
+  {id:1, name:"Pre-onboard", cls:"p1", color:"var(--p1)", light:"var(--p1-light)"},
+  {id:2, name:"Onboard",     cls:"p2", color:"var(--p2)", light:"var(--p2-light)"},
+  {id:3, name:"Post Onboard",cls:"p3", color:"var(--p3)", light:"var(--p3-light)"},
+];
+
+// Avatar colors cycling
+const AVATAR_COLORS = ["#6c63d4","#0f9068","#b06e12","#c93535","#0e7eb8","#7a3fb5","#1a6b47"];
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+const KEY = "bstage_manager_v3";
+let state = {bstages:[]};
+let currentId = null;
+
+function loadState(){
+  try{
+    const s = localStorage.getItem(KEY);
+    if(s) state = JSON.parse(s);
+  }catch(e){}
+  state.bstages.forEach(b=>{
+    if(!Array.isArray(b.checks)||b.checks.length!==TOTAL)
+      b.checks = Array(TOTAL).fill(false);
+  });
+}
+
+function saveState(){
+  localStorage.setItem(KEY, JSON.stringify(state));
+}
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById("screen-"+id).classList.add("active");
+  window.scrollTo(0,0);
+}
+
+function goToDashboard(){
+  currentId = null;
+  renderDashboard();
+  showScreen("dashboard");
+}
+
+function openDetail(id){
+  currentId = id;
+  renderDetail();
+  showScreen("detail");
+}
+
+/* ═══════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════ */
+function esc(str){ return String(str); } // task names/descs already safe for innerHTML
+
+function phaseTaskIndices(phaseId){
+  return TASKS.map((t,i)=>t.phase===phaseId?i:-1).filter(i=>i>=0);
+}
+
+function countDone(checks){ return checks.filter(Boolean).length; }
+
+function phasePct(phaseId, checks){
+  const idxs = phaseTaskIndices(phaseId);
+  const done = idxs.filter(i=>checks[i]).length;
+  return {done, total:idxs.length, pct:Math.round(done/idxs.length*100)};
+}
+
+function avatarColor(name, idx){
+  const i = (name.charCodeAt(0) + idx) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[i];
+}
+
+function formatDate(ts){
+  if(!ts) return "";
+  return new Date(ts).toLocaleDateString("vi-VN",{day:"2-digit",month:"2-digit",year:"numeric"});
+}
+
+/* ═══════════════════════════════════════
+   STACKED BAR
+═══════════════════════════════════════ */
+function buildStackedBar(containerId, checks){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  // Keep existing segments, just update widths
+  let segs = el.querySelectorAll(".seg");
+  if(segs.length !== PHASES.length){
+    el.innerHTML = PHASES.map(ph=>`<div class="seg seg-${ph.cls}" style="width:0%"></div>`).join("");
+    segs = el.querySelectorAll(".seg");
+  }
+  PHASES.forEach((ph,i)=>{
+    const idxs = phaseTaskIndices(ph.id);
+    const done = idxs.filter(j=>checks[j]).length;
+    const w = (done/TOTAL*100).toFixed(2);
+    segs[i].style.width = w+"%";
+  });
+}
+
+/* ═══════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════ */
+function renderDashboard(){
+  const {bstages} = state;
+
+  // Summary
+  renderSummaryBoard(bstages);
+
+  const grid   = document.getElementById("bstage-grid");
+  const empty  = document.getElementById("empty-state");
+  const label  = document.getElementById("grid-label");
+
+  if(bstages.length === 0){
+    grid.style.display  = "none";
+    label.style.display = "none";
+    empty.style.display = "flex";
+    return;
+  }
+
+  empty.style.display = "none";
+  grid.style.display  = "grid";
+  label.style.display = "block";
+  label.textContent   = `${bstages.length} b.stage đang được quản lý`;
+
+  grid.innerHTML = bstages.map((b,idx)=>buildCard(b,idx)).join("");
+}
+
+function renderSummaryBoard(bstages){
+  const board = document.getElementById("summary-board");
+  const total = bstages.length;
+  const totalTasks = total * TOTAL;
+  const totalDone = bstages.reduce((a,b)=>a+countDone(b.checks),0);
+  const avgPct = total > 0 ? Math.round(totalDone/totalTasks*100) : 0;
+
+  board.innerHTML = `
+    <div class="sum-card anim-fadein">
+      <div class="sum-n">${total}</div>
+      <div class="sum-l">b.stage đang quản lý</div>
+    </div>
+    <div class="sum-card anim-fadein" style="animation-delay:.05s">
+      <div class="sum-n">${totalDone}<span>/${totalTasks}</span></div>
+      <div class="sum-l">Tasks hoàn thành</div>
+    </div>
+    <div class="sum-card anim-fadein" style="animation-delay:.1s">
+      <div class="sum-n">${avgPct}%</div>
+      <div class="sum-l">Tiến độ trung bình</div>
+    </div>`;
+}
+
+function buildCard(b, idx){
+  const done = countDone(b.checks);
+  const pct  = Math.round(done/TOTAL*100);
+  const color = avatarColor(b.name, idx);
+
+  let statusCls="badge-neutral", statusTxt="Chưa bắt đầu";
+  if(pct===100){statusCls="badge-done";statusTxt="Hoàn thành";}
+  else if(pct>0){statusCls="badge-progress";statusTxt="Đang thực hiện";}
+
+  // Mini stacked bar segments
+  const miniSegs = PHASES.map(ph=>{
+    const idxs = phaseTaskIndices(ph.id);
+    const pDone = idxs.filter(i=>b.checks[i]).length;
+    const w = (pDone/TOTAL*100).toFixed(1);
+    return `<div class="seg seg-${ph.cls}" style="width:${w}%"></div>`;
+  }).join("");
+
+  const phaseDots = PHASES.map(ph=>{
+    const {done:pd, total:pt} = phasePct(ph.id, b.checks);
+    const p = Math.round(pd/pt*100);
+    return `<div class="card-phase-dot"><div class="dot" style="background:${ph.color}"></div>${ph.name.split(" ")[0]} ${p}%</div>`;
+  }).join("");
+
+  const initials = b.name.trim().split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+  const dateStr  = b.createdAt ? formatDate(b.createdAt) : "";
+
+  return `
+    <div class="bstage-card anim-fadeup" style="animation-delay:${idx*0.04}s" onclick="openDetail('${b.id}')">
+      <button class="card-delete" onclick="event.stopPropagation();deleteBstage('${b.id}')" title="Xoá b.stage">×</button>
+      <div class="card-top">
+        <div class="card-avatar" style="background:${color}">${initials||"?"}</div>
+        <div class="card-info">
+          <div class="card-name">${esc(b.name)}</div>
+          ${dateStr?`<div class="card-date">Tạo ngày ${dateStr}</div>`:""}
+        </div>
+        <span class="badge ${statusCls}">${statusTxt}</span>
+      </div>
+      <div class="card-bar-row">
+        <div class="sbar">${miniSegs}</div>
+        <span class="card-pct">${pct}%</span>
+      </div>
+      <div class="card-phases">${phaseDots}</div>
+      <div class="card-count">${done} / ${TOTAL} tasks hoàn thành</div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════
+   DETAIL
+═══════════════════════════════════════ */
+function renderDetail(){
+  const b = state.bstages.find(x=>x.id===currentId);
+  if(!b) return;
+
+  document.getElementById("detail-title").textContent = b.name;
+  document.getElementById("detail-crumb-name").textContent = b.name;
+
+  renderDetailStats(b);
+
+  // Render phase blocks only on first open or reset
+  document.getElementById("phases-container").innerHTML =
+    PHASES.map(ph=>buildPhaseBlock(ph, b)).join("");
+}
+
+function renderDetailStats(b){
+  const done = countDone(b.checks);
+  const pct  = Math.round(done/TOTAL*100);
+
+  document.getElementById("s-total").textContent = TOTAL;
+  setStatVal("s-done", done);
+  setStatVal("s-pct", pct+"%");
+  document.getElementById("overall-pct").textContent = pct+"%";
+
+  buildStackedBar("sbar-main", b.checks);
+
+  PHASES.forEach(ph=>{
+    const {done:pd, total:pt} = phasePct(ph.id, b.checks);
+    const p = Math.round(pd/pt*100);
+    const pd_el = document.getElementById("pd"+ph.id);
+    if(pd_el) pd_el.textContent = `${ph.name} — ${p}%`;
+    const pb = document.getElementById("pb"+ph.id);
+    if(pb) pb.style.width = p+"%";
+    const pp = document.getElementById("pp"+ph.id);
+    if(pp) pp.textContent = p+"%";
+  });
+}
+
+function setStatVal(id, v){
+  const el = document.getElementById(id);
+  if(!el||el.textContent===String(v)) return;
+  el.textContent = v;
+  const stat = el.closest(".stat");
+  if(!stat) return;
+  stat.classList.remove("flash");
+  void stat.offsetWidth;
+  stat.classList.add("flash");
+}
+
+const CLOCK_ICON = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.5V6L7.5 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`;
+const DOC_ICON   = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="2" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M4 5.5h4M4 7.5h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`;
+
+function buildPhaseBlock(ph, b){
+  const phTasks = TASKS.map((t,i)=>({...t,idx:i})).filter(t=>t.phase===ph.id);
+  const {pct} = phasePct(ph.id, b.checks);
+
+  const items = phTasks.map(t=>{
+    const checked = b.checks[t.idx];
+    const icon    = t.icon==="doc" ? DOC_ICON : CLOCK_ICON;
+    const timeHtml = t.launch
+      ? `<div class="time-row"><span class="launch-tag">🚀 Ngày ra mắt b.stage</span></div>`
+      : `<div class="time-row"><span class="time-tag">${icon} ${t.time}</span></div>`;
+    const linksHtml = t.links.length
+      ? `<div class="links-row">${t.links.map(l=>`<a href="${l.url}" target="_blank" class="ref">${l.text}</a>`).join("")}</div>`
+      : "";
+    return `
+      <div class="task-item${checked?" completed":""}" data-idx="${t.idx}">
+        <input type="checkbox" class="cb" data-idx="${t.idx}" ${checked?"checked":""}
+               onchange="toggleTask(${t.idx},this.checked)">
+        <div class="task-body">
+          <div class="task-name">${t.name}</div>
+          <div class="task-desc">${t.desc}</div>
+          <div class="task-meta">${timeHtml}${linksHtml}</div>
+        </div>
+      </div>`;
+  }).join("");
+
+  return `
+    <div class="phase ${ph.cls}">
+      <div class="phase-head">
+        <div class="phase-left">
+          <span class="phase-pill">Phase ${ph.id}</span>
+          <span class="phase-title">${ph.name}</span>
+        </div>
+        <div class="phase-right">
+          <div class="phase-bar-track">
+            <div class="phase-bar-fill" id="pb${ph.id}" style="width:${pct}%"></div>
+          </div>
+          <span class="phase-pct" id="pp${ph.id}">${pct}%</span>
+        </div>
+      </div>
+      <div class="task-list">${items}</div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════
+   ACTIONS
+═══════════════════════════════════════ */
+function toggleTask(idx, checked){
+  const b = state.bstages.find(x=>x.id===currentId);
+  if(!b) return;
+  b.checks[idx] = checked;
+  const item = document.querySelector(`.task-item[data-idx="${idx}"]`);
+  if(item) item.classList.toggle("completed", checked);
+  saveState();
+  renderDetailStats(b);
+}
+
+function resetCurrent(){
+  const b = state.bstages.find(x=>x.id===currentId);
+  if(!b||!confirm(`Reset toàn bộ tiến độ cho "${b.name}"?`)) return;
+  b.checks = Array(TOTAL).fill(false);
+  saveState();
+  renderDetail();
+}
+
+function deleteBstage(id){
+  const b = state.bstages.find(x=>x.id===id);
+  if(!b||!confirm(`Xoá b.stage "${b.name}"?\nDữ liệu sẽ không thể khôi phục.`)) return;
+  state.bstages = state.bstages.filter(x=>x.id!==id);
+  saveState();
+  renderDashboard();
+}
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+function openModal(){
+  document.getElementById("modal-overlay").classList.add("active");
+  setTimeout(()=>document.getElementById("modal-input").focus(), 60);
+}
+
+function closeModal(){
+  document.getElementById("modal-overlay").classList.remove("active");
+  document.getElementById("modal-input").value = "";
+}
+
+function handleOverlayClick(e){
+  if(e.target===document.getElementById("modal-overlay")) closeModal();
+}
+
+function confirmAdd(){
+  const name = document.getElementById("modal-input").value.trim();
+  if(!name){ document.getElementById("modal-input").focus(); return; }
+  const id = "bs_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+  state.bstages.push({id, name, checks:Array(TOTAL).fill(false), createdAt:Date.now()});
+  saveState();
+  closeModal();
+  renderDashboard();
+}
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+loadState();
+renderDashboard();
+</script>
+</body>
+</html>
