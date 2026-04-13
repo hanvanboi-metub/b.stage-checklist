@@ -1,0 +1,41 @@
+# Hệ điều hành
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE / Trình soạn thảo
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# Node.js (nếu sử dụng)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python (nếu sử dụng)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+
+# Tệp tạm thời
+*.tmp
+*.temp
+.cache/
+
+# Tệp cá nhân
+.env
+.env.local
+secrets.json
+
+# Tệp hệ thống
+.directory
+.Spotlight-V100
+.Trashes
