@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B.stage Checklist — Artist Partnership</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#f7f6f2;
+  --surface:#ffffff;
+  --border:#e4e2db;
+  --border-strong:#ccc9bf;
+  --text:#18180f;
+  --text-2:#5a5a50;
+  --text-3:#9a9a8e;
+  --p1:#6c63d4;
+  --p1-light:#eeedfc;
+  --p1-mid:#a9a3e8;
+  --p2:#0f9068;
+  --p2-light:#e0f5ee;
+  --p2-mid:#5dc8a3;
+  --p3:#b06e12;
+  --p3-light:#faecd8;
+  --p3-mid:#e8a43a;
+  --red:#c93535;
+  --radius:10px;
+  --radius-sm:6px;
+  --font:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.06);
+}
+
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;padding:32px 16px 60px;-webkit-font-smoothing:antialiased}
+
+.wrap{max-width:780px;margin:0 auto}
+
+/* ── HEADER ── */
+.header{margin-bottom:36px}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:6px}
+.header-eyebrow{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
+.header h1{font-size:28px;font-weight:600;letter-spacing:-.3px;line-height:1.2;color:var(--text)}
+.header-sub{font-size:14px;color:var(--text-2);margin-top:6px;line-height:1.5}
+.header-reset{font-size:12px;color:var(--text-3);background:none;border:0.5px solid var(--border-strong);padding:6px 12px;border-radius:99px;cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap;margin-top:4px}
+.header-reset:hover{border-color:var(--red);color:var(--red)}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+.stat{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.stat-n{font-family:var(--mono);font-size:30px;font-weight:500;color:var(--text);line-height:1;margin-bottom:4px;transition:color .3s}
+.stat-l{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3)}
+
+/* ── OVERALL BAR ── */
+.overall{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:32px}
+.overall-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.overall-label{font-size:12px;font-weight:500;color:var(--text-2)}
+.overall-pct{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text)}
+.bar-track{height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bar-fill-overall{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--p1),var(--p2),var(--p3));background-size:200%;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.phase-dots{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.pdot{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3)}
+.pdot-circle{width:7px;height:7px;border-radius:50%}
+
+/* ── PHASE ── */
+.phase{margin-bottom:28px}
+.phase-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-radius:var(--radius) var(--radius) 0 0;border:1.25px solid var(--border);border-bottom:none;background:var(--surface);flex-wrap:wrap;gap:10px}
+.phase-left{display:flex;align-items:center;gap:10px}
+.phase-pill{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:4px 10px;border-radius:99px}
+.phase-title{font-size:15px;font-weight:600;color:var(--text)}
+.phase-right{display:flex;align-items:center;gap:10px;min-width:160px;flex:0 0 auto}
+.phase-bar-track{flex:1;height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.phase-bar-fill{height:100%;border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.phase-pct{font-family:var(--mono);font-size:12px;font-weight:500;min-width:32px;text-align:right}
+
+/* ── TASK LIST ── */
+.task-list{border:2px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);overflow:hidden;background:var(--surface)}
+.task-item{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;border-top:1px solid var(--border);transition:background .15s;position:relative}
+.task-item:first-child{border-top:none}
+.task-item:hover{background:#fafaf8}
+.task-item.completed{background:#fafaf8}
+.task-item.completed .task-name{text-decoration:line-through;color:var(--text-3)}
+.task-item.completed .task-desc{color:var(--text-3)}
+
+/* ── CHECKBOX ── */
+.cb{width:18px;height:18px;min-width:18px;margin-top:2px;cursor:pointer;appearance:none;-webkit-appearance:none;border:1.5px solid var(--border-strong);border-radius:4px;background:var(--surface);transition:all .15s;position:relative;display:flex;align-items:center;justify-content:center}
+.cb:hover{border-color:var(--text-2)}
+.cb:checked{border-color:transparent}
+.cb:checked::after{content:'';display:block;width:10px;height:7px;background-image:url("data:image/svg+xml,%3Csvg width='10' height='7' viewBox='0 0 10 7' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3L4 6L9 1' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-size:contain}
+.p1 .cb:checked{background:var(--p1)}
+.p2 .cb:checked{background:var(--p2)}
+.p3 .cb:checked{background:var(--p3)}
+.p1 .cb:hover:not(:checked){border-color:var(--p1)}
+.p2 .cb:hover:not(:checked){border-color:var(--p2)}
+.p3 .cb:hover:not(:checked){border-color:var(--p3)}
+
+/* ── TASK CONTENT ── */
+.task-body{flex:1;min-width:0}
+.task-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.4}
+.task-desc{font-size:13px;color:var(--text-2);line-height:1.55;margin-bottom:10px}
+.task-meta{display:flex;flex-direction:column;gap:7px}
+
+/* ── TIMELINE TAG ── */
+.time-row{display:flex;align-items:center;gap:7px}
+.time-tag{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:4px 10px 4px 8px;border-radius:6px;color:var(--phase-color,var(--text-2));background:var(--phase-bg,var(--bg));border-left:3px solid var(--phase-color,var(--border-strong));line-height:1.3}
+.time-tag svg{flex-shrink:0;opacity:.8}
+
+/* ── LINKS ROW ── */
+.links-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ref{font-size:11px;color:var(--text-2);text-decoration:none;padding:3px 8px;border-radius:99px;border:0.5px solid var(--border);background:var(--bg);transition:all .15s;display:inline-flex;align-items:center;gap:4px;font-weight:500}
+.ref:hover{border-color:var(--text);color:var(--text)}
+.ref::after{content:'↗';font-size:10px;opacity:.6}
+.launch-tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 10px 4px 8px;border-radius:6px;background:#fff3f3;color:var(--red);border-left:3px solid var(--red);line-height:1.3}
+
+/* ── PHASE COLORS ── */
+.p1 .phase-head{border-color:var(--p1-mid)}
+.p1 .task-list{border-color:var(--p1-mid)}
+.p1 .task-item{border-top-color:#e8e6f8}
+.p1 .phase-pill{background:var(--p1-light);color:var(--p1)}
+.p1 .phase-pct{color:var(--p1)}
+.p1 .phase-bar-fill{background:var(--p1)}
+.p1 .time-tag{--phase-color:var(--p1);--phase-bg:var(--p1-light)}
+
+.p2 .phase-head{border-color:var(--p2-mid)}
+.p2 .task-list{border-color:var(--p2-mid)}
+.p2 .task-item{border-top-color:#d8f0e8}
+.p2 .phase-pill{background:var(--p2-light);color:var(--p2)}
+.p2 .phase-pct{color:var(--p2)}
+.p2 .phase-bar-fill{background:var(--p2)}
+.p2 .time-tag{--phase-color:var(--p2);--phase-bg:var(--p2-light)}
+
+.p3 .phase-head{border-color:var(--p3-mid)}
+.p3 .task-list{border-color:var(--p3-mid)}
+.p3 .task-item{border-top-color:#f5e8d0}
+.p3 .phase-pill{background:var(--p3-light);color:var(--p3)}
+.p3 .phase-pct{color:var(--p3)}
+.p3 .phase-bar-fill{background:var(--p3)}
+.p3 .time-tag{--phase-color:var(--p3);--phase-bg:var(--p3-light)}
+
+/* ── NOTE ── */
+.note{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;font-size:12.5px;color:var(--text-2);line-height:1.6}
+.note strong{color:var(--text);font-weight:500}
+
+/* ── FOOTER ── */
+.footer{margin-top:40px;text-align:center;font-size:11px;color:var(--text-3);letter-spacing:.03em}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.phase{animation:fadeup .4s ease both}
+.phase:nth-child(2){animation-delay:.05s}
+.phase:nth-child(3){animation-delay:.1s}
+.phase:nth-child(4){animation-delay:.15s}
+.stats .stat:nth-child(1){animation:fadeup .3s ease both}
+.stats .stat:nth-child(2){animation:fadeup .3s .05s ease both}
+.stats .stat:nth-child(3){animation:fadeup .3s .1s ease both}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(0,0,0,.12)}70%{box-shadow:0 0 0 6px rgba(0,0,0,0)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
+.stat.flash .stat-n{animation:ping .5s ease}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .header h1{font-size:22px}
+  .stats{grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat{padding:14px 12px}
+  .stat-n{font-size:24px}
+  .phase-head{flex-direction:column;align-items:flex-start}
+  .phase-right{width:100%;min-width:unset}
+  body{padding:20px 12px 50px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-eyebrow">Team Artist Partnership</div>
+    <div class="header-top">
+      <div>
+        <h1>B.stage Checklist</h1>
+        <p class="header-sub">Quy trình vận hành — Chuẩn bị, triển khai & duy trì sau khi ra mắt.</p>
+      </div>
+      <button class="header-reset" onclick="resetAll()">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Hướng dẫn:</strong> Tích vào ô checkbox để đánh dấu công việc đã hoàn thành. Tiến độ được cập nhật tự động và lưu trên trình duyệt.
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="s-total">11</div><div class="stat-l">Tổng công việc</div></div>
+    <div class="stat"><div class="stat-n" id="s-done">0</div><div class="stat-l">Đã hoàn thành</div></div>
+    <div class="stat"><div class="stat-n" id="s-pct">0%</div><div class="stat-l">Tiến độ chung</div></div>
+  </div>
+
+  <div class="overall">
+    <div class="overall-top">
+      <span class="overall-label">Tổng tiến độ 3 giai đoạn</span>
+      <span class="overall-pct" id="overall-pct">0%</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill-overall" id="bar-overall" style="width:0%"></div></div>
+    <div class="phase-dots">
+      <div class="pdot"><div class="pdot-circle" style="background:var(--p1)"></div><span id="pd1">Phase 1 — 0%</span></div>
+      <div class="pdot" style="color:var(--border-strong)">·</div>
+      <div class="pdot"><div class="pdot-circle" style="background:var(--p2)"></div><span id="pd2">Phase 2 — 0%</span></div>
+      <div class="pdot" style="color:var(--border-strong)">·</div>
+      <div class="pdot"><div class="pdot-circle" style="background:var(--p3)"></div><span id="pd3">Phase 3 — 0%</span></div>
+    </div>
+  </div>
+
+  <!-- ══ PHASE 1 ══ -->
+  <div class="phase p1">
+    <div class="phase-head">
+      <div class="phase-left">
+        <span class="phase-pill">Phase 1</span>
+        <span class="phase-title">Pre Onboard</span>
+      </div>
+      <div class="phase-right">
+        <div class="phase-bar-track"><div class="phase-bar-fill" id="pb1" style="width:0%"></div></div>
+        <span class="phase-pct" id="pp1">0%</span>
+      </div>
+    </div>
+    <div class="task-list">
+
+      <div class="task-item">
+        <input type="checkbox" class="cb" data-phase="1">
+        <div class="task-body">
+          <div class="task-name">Yêu cầu mở b.stage mới</div>
+          <div class="task-desc">Gửi yêu cầu tạo b.stage mới cho nghệ sĩ, bao gồm việc cấu hình tên miền riêng (custom domain) nếu có.</div>
+          <div class="task-meta">
+            <div class="time-row">
+              <span class="time-tag">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.5V6L7.5 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                2–3 ngày · tối thiểu 2 tuần trước ra mắt
+              </span>
+            </div>
+            <div class="links-row">
+              <a href="https://forms.gle/rqjdBtzP7qaBRARc9" target="_blank" class="ref">Submit form request</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-item">
+        <input type="checkbox" class="cb" data-phase="1">
+        <div class="task-body">
+          <div class="task-name">Demo nền tảng b.stage</div>
+          <div class="task-desc">Chuẩn bị một bản demo b.stage cơ bản để giới thiệu cho đối tác nghệ sĩ. Có thể sử dụng trang demo của Jessica hoặc tạo một bản demo tùy chỉnh.</div>
+          <div class="task-meta">
+            <div class="time-row">
+              <span class="time-tag">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.5V6L7.5 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                1 tuần trước buổi gặp khách hàng
+              </span>
+            </div>
+            <div class="links-row">
+              <a href="https://jessica.bstage.in/" target="_blank" class="ref">Jessica Demo</a>
+              <a href="https://one-island.bstage.in/" target="_blank" class="ref">ONEISLAND Demo</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-item">
+        <input type="checkbox" class="cb" data-phase="1">
+        <div class="task-body">
+          <div class="task-name">Lên ý tưởng bố cục demo</div>
+          <div class="task-desc">Lên ý tưởng về bố cục trang chủ, các trang nội dung (Story, Contents, Shop) và định hướng nghệ thuật phù hợp với hình ảnh của nghệ sĩ. Share Material request cho nghệ sĩ trong lúc chốt layout.</div>
+          <div class="task-meta">
+            <div class="time-row">
+              <span class="time-tag">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.5V6L7.5 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                1 tuần làm việc trước khi ra mắt
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-item">
+        <input type="checkbox" class="cb" data-phase="1">
+        <div class="task-body">
+          <div class="task-name">Xác định lịch trình ra mắt tính năng</div>
+          <div class="task-desc">Thảo luận và thống nhất với đối tác nghệ sĩ về lộ trình ra mắt các tính năng chính (Membership, Merchandise, v.v.) sau khi b.stage đi vào hoạt động.</div>
+          <div class="task-meta">
+            <div class="time-row">
+              <span class="time-tag">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.5V6L7.5 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                Trong buổi gặp khách hàng
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ PHASE 2 ══ -->
+  <div class="phase p2">
+    <div class="phase-head">
+      <div class="phase-left">
+        <span class="phase-pill">Phase 2</span>
+        <span class="phase-title">Onboard</span>
+      </div>
+      <div class="phase-right">
+        <div class="phase-bar-track"><div class="phase-bar-fill" id="pb2" style="width:0%"></div></div>
+        <span class="phase-pct" id="pp2">0%</span>
+      </div>
+    </div>
+    <div class="task-list">
+
+      <div class="task-item">
+        <input type="checkbox" class="cb" data-phase="2">
+        <div class="task-body">
+          <div class="task-name">Setup account admin (internal) và nghệ sĩ (partner)</div>
+          <div class="task-desc">Tạo và cấu hình tài khoản quản trị (admin) cho đội ngũ nội bộ và tài khoản đối tác nghệ sĩ (partner) với các quyền hạn phù hợp.</div>
+          <div class="task-meta">
+            <div class="time-row">
+              <span class="time-tag">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.5V6L7.5 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                1–2 ngày làm việc sau khi b.stage mở domain
+              </span>
+            </div>
+            <div class="links-row">
+              <a href="https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.76q34e8sk7q2" target="_blank" class="ref">Create account</a>
+              <a href="https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.g7mtlkprdo9g" target="_blank" class="ref">Phân quyền account</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-item">
+        <input type="checkbox" class="cb" data-phase="2">
+        <div class="task-body">
+          <div class="task-name">Setup trang Home / Content / Shop</div>
+          <div class="task-desc">Cấu hình trang chủ (Main Home), trang nội dung (Content Home) và trang cửa hàng (Shop) với các module và nội dung đã thống nhất. Collect asset từ nghệ sĩ.</div>
+          <div class="task-meta">
+            <div class="time-row">
+              <span class="time-tag">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.5V6L7.5 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                1–2 ngày · tối thiểu 3–5 ngày trước ra mắt
+              </span>
+            </div>
+            <div class="links-row">
+              <a href="https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.sqr0fhkcstae" target="_blank" class="ref">Manage Menu</a>
+              <a href="https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.6sqm5bd3944a" target="_blank" class="ref">Custom Page</a>
+              <a href="https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.7f4iwrrvzwko" target="_blank" class="ref">Design Settings</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-item">
+        <input type="checkbox" class="cb" data-phase="2">
+        <div class="task-body">
+          <div class="task-name">Schedule (lịch trình)</div>
+          <div class="task-desc">Cập nhật lịch hoạt động của nghệ sĩ trên b.stage.</div>
+          <div class="task-meta">
+            <div class="time-row">
+              <span class="time-tag">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.5V6L7.5 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                1–2 ngày làm việc trước ngày ra mắt
+              </span>
+            </div>
+            <div class="links-row">
+              <a href="https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.lzjgbmmh4xu0" target="_blank" class="ref">Schedule</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-item">
+        <input type="checkbox" class="cb" data-phase="2">
+        <div class="task-body">
+          <div class="task-name">Content welcome</div>
+          <div class="task-desc">Chuẩn bị và đăng tải các nội dung chào mừng (video giới thiệu, bài viết chào fan, hình ảnh độc quyền) để tạo ấn tượng ban đầu cho người hâm mộ.</div>
+          <div class="task-meta">
+            <div class="time-row">
+              <span class="launch-tag">🚀 Ngày ra mắt b.stage</span>
+            </div>
+            <div class="links-row">
+              <a href="https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.we46snw88j3h" target="_blank" class="ref">Free content</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ PHASE 3 ══ -->
+  <div class="phase p3">
+    <div class="phase-head">
+      <div class="phase-left">
+        <span class="phase-pill">Phase 3</span>
+        <span class="phase-title">Post Onboard</span>
+      </div>
+      <div class="phase-right">
+        <div class="phase-bar-track"><div class="phase-bar-fill" id="pb3" style="width:0%"></div></div>
+        <span class="phase-pct" id="pp3">0%</span>
+      </div>
+    </div>
+    <div class="task-list">
+
+      <div class="task-item">
+        <input type="checkbox" class="cb" data-phase="3">
+        <div class="task-body">
+          <div class="task-name">Kế hoạch nội dung</div>
+          <div class="task-desc">Xây dựng kế hoạch nội dung dài hạn (hàng tuần/tháng) bao gồm các loại nội dung, tần suất đăng tải và chủ đề phù hợp với chiến lược của nghệ sĩ.</div>
+          <div class="task-meta">
+            <div class="time-row">
+              <span class="time-tag">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="2" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M4 5.5h4M4 7.5h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                Hàng tháng / Quý
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-item">
+        <input type="checkbox" class="cb" data-phase="3">
+        <div class="task-body">
+          <div class="task-name">Monetize — Shop &amp; Membership</div>
+          <div class="task-desc">Tối ưu hóa hiệu quả của cửa hàng (Merchandise) và các gói thành viên (Membership). Bao gồm cập nhật sản phẩm mới, điều chỉnh giá, quản lý danh sách chờ nếu cần.</div>
+          <div class="task-meta">
+            <div class="time-row">
+              <span class="time-tag">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.5V6L7.5 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                Membership: 1–2 ngày · Merchandise: 2–3 ngày
+              </span>
+            </div>
+            <div class="links-row">
+              <a href="https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.4loqisjo5c3s" target="_blank" class="ref">Shop &amp; Product</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-item">
+        <input type="checkbox" class="cb" data-phase="3">
+        <div class="task-body">
+          <div class="task-name">Revise — Đánh giá và điều chỉnh</div>
+          <div class="task-desc">Định kỳ đánh giá hiệu suất của b.stage (lượt truy cập, tương tác, doanh thu) và điều chỉnh chiến lược nội dung, vận hành. Sử dụng Datalabs để phân tích dữ liệu.</div>
+          <div class="task-meta">
+            <div class="time-row">
+              <span class="time-tag">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="2" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M4 5.5h4M4 7.5h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                Hàng tháng / Quý
+              </span>
+            </div>
+            <div class="links-row">
+              <a href="https://docs.google.com/document/d/150GqmnfPGMmBAG4BbOREKdWLeatlZdIN76i9O-2d6dg/edit?tab=t.zbtmq0tmeb56" target="_blank" class="ref">Datalabs</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">B.stage Checklist · Team Artist Partnership · Dữ liệu lưu trên trình duyệt</div>
+</div>
+
+<script>
+const KEY='bstage_v2';
+const cbs=document.querySelectorAll('.cb');
+
+function save(){localStorage.setItem(KEY,JSON.stringify([...cbs].map(c=>c.checked)))}
+
+function update(){
+  const phases=[1,2,3];
+  let total=0,done=0;
+  phases.forEach(p=>{
+    const pCbs=document.querySelectorAll(`[data-phase="${p}"]`);
+    const pDone=[...pCbs].filter(c=>c.checked).length;
+    const pTotal=pCbs.length;
+    const pct=pTotal?Math.round(pDone/pTotal*100):0;
+    document.getElementById(`pb${p}`).style.width=pct+'%';
+    document.getElementById(`pp${p}`).textContent=pct+'%';
+    document.getElementById(`pd${p}`).textContent=`Phase ${p} — ${pct}%`;
+    total+=pTotal; done+=pDone;
+  });
+  const overall=total?Math.round(done/total*100):0;
+  document.getElementById('bar-overall').style.width=overall+'%';
+  document.getElementById('overall-pct').textContent=overall+'%';
+  document.getElementById('s-total').textContent=total;
+  setText('s-done',done);
+  setText('s-pct',overall+'%');
+}
+
+function setText(id,v){
+  const el=document.getElementById(id);
+  if(el.textContent!==String(v)){
+    el.textContent=v;
+    el.closest('.stat').classList.remove('flash');
+    void el.closest('.stat').offsetWidth;
+    el.closest('.stat').classList.add('flash');
+  }
+}
+
+function resetAll(){
+  if(!confirm('Reset toàn bộ tiến độ?'))return;
+  cbs.forEach(c=>{c.checked=false;c.closest('.task-item').classList.remove('completed')});
+  localStorage.removeItem(KEY);
+  update();
+}
+
+cbs.forEach(cb=>{
+  cb.addEventListener('change',function(){
+    this.closest('.task-item').classList.toggle('completed',this.checked);
+    save();update();
+  });
+});
+
+const saved=localStorage.getItem(KEY);
+if(saved){
+  const data=JSON.parse(saved);
+  cbs.forEach((cb,i)=>{
+    if(data[i]){cb.checked=true;cb.closest('.task-item').classList.add('completed')}
+  });
+}
+update();
+</script>
+</body>
+</html>
