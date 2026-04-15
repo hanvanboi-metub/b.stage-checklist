@@ -39,3 +39,5 @@ secrets.json
 .directory
 .Spotlight-V100
 .Trashes
+.vercel
+.env*.local
