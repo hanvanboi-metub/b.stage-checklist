@@ -1,6 +1,6 @@
-# b.stage Checklist - Artist Partnership
+# b.stage Checklist - Artist Partnership (Powered by Supabase + Next.js)
 
-Một công cụ quản lý dự án tương tác (Interactive Dashboard) được thiết kế đặc biệt cho team Artist Partnership khi triển khai giải pháp **b.stage** cho các nghệ sĩ và đối tác.
+Một công cụ quản lý dự án tương tác (Interactive Dashboard) được thiết kế đặc biệt cho team Artist Partnership khi triển khai giải pháp **b.stage** cho các nghệ sĩ và đối tác. Phiên bản mới có tính năng **Sync Real-time** - dữ liệu tự động đồng bộ giữa các người dùng khác nhau!
 
 ## 📋 Giới thiệu
 
@@ -13,91 +13,147 @@ Checklist này hỗ trợ team trong toàn bộ quy trình triển khai b.stage,
 ## ✨ Tính năng chính
 
 - **✓ Tương tác trực tiếp**: Tích vào các ô checkbox để đánh dấu công việc đã hoàn thành
+- **✓ Sync Real-time**: Khi người A tích vào checklist, máy của người B tự động cập nhật mà không cần F5
+- **✓ Lưu trữ trên Cloud**: Dữ liệu được lưu trên Supabase (không phải local) nên có thể truy cập từ bất kỳ máy nào
 - **✓ Theo dõi tiến độ thời gian thực**: Tự động tính toán % hoàn thành cho từng giai đoạn
 - **✓ Dashboard thống kê**: Hiển thị tổng công việc, số công việc đã hoàn thành, và tiến độ tổng thể
 - **✓ Giao diện Silver/Metallic**: Thiết kế sang trọng, chuyên nghiệp với tông màu Đen - Xám - Trắng
-- **✓ Lưu trữ thông minh**: Dữ liệu được lưu cục bộ trên trình duyệt, không lo mất dữ liệu
 - **✓ Tra cứu nhanh**: Tích hợp sẵn các link hướng dẫn từ b.stage Support vào từng đầu việc
 
-## 🚀 Cách sử dụng
+## 🚀 Cách sử dụng & Deploy
 
-### Cách 1: Sử dụng trực tiếp từ GitHub Pages
-Truy cập vào link GitHub Pages của repository này để sử dụng checklist ngay trên trình duyệt.
+### Bước 1: Setup Supabase Database
 
-### Cách 2: Tải về máy cục bộ
-1. Clone repository:
-   ```bash
-   git clone https://github.com/your-username/bstage-checklist.git
-   cd bstage-checklist
-   ```
+1. Tạo một project trên [Supabase](https://supabase.com)
+2. Vào **SQL Editor** và paste toàn bộ code từ file `supabase_migrations.sql`
+3. Chạy SQL để tạo bảng `notes`
+4. **Quan trọng**: Vào **Database → Replication** và bật Realtime cho bảng `notes` (chọn table, không phải view)
 
-2. Mở file `index.html` bằng trình duyệt:
-   ```bash
-   # Trên macOS
-   open index.html
-   
-   # Trên Linux
-   xdg-open index.html
-   
-   # Trên Windows
-   start index.html
-   ```
+### Bước 2: Lấy API Keys từ Supabase
 
-### Cách 3: Sử dụng Local Server (tùy chọn)
-Nếu bạn muốn chạy qua một local server:
+1. Vào **Project Settings → API**
+2. Copy các giá trị sau:
+   - `NEXT_PUBLIC_SUPABASE_URL` (Project URL)
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (anon public key)
+
+### Bước 3: Cấu hình Environment Variables
+
+Tạo file `.env.local` tại thư mục gốc của project:
 
 ```bash
-# Sử dụng Python 3
-python3 -m http.server 8000
-
-# Sử dụng Node.js (nếu đã cài http-server)
-npx http-server
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_anon_key_here
 ```
 
-Sau đó truy cập `http://localhost:8000` trên trình duyệt.
+### Bước 4: Cài đặt Dependencies & Chạy
 
-## 📊 Timeline Triển khai
+```bash
+# Cài đặt dependencies
+npm install
 
-Dưới đây là timeline tổng quát cho quá trình triển khai b.stage:
+# Chạy development server
+npm run dev
 
-### Pre-onboard (Tuần 1-2)
-- Yêu cầu mở b.stage mới: **2 tuần trước ngày ra mắt**
-- Demo web b.stage: **1 tuần trước buổi gặp khách hàng**
-- Layout demo: **1 tuần làm việc trước khi ra mắt**
-- Xác định lịch release: **Trong buổi gặp khách hàng**
+# Truy cập http://localhost:3000/notes
+```
 
-### Onboard (Tuần 3-4)
-- Setup account admin: **1-2 ngày sau khi mở domain**
-- Setup trang home-content-shop: **3-5 ngày trước ngày ra mắt**
-- Content welcome: **Ngày ra mắt b.stage**
+### Bước 5: Deploy lên Vercel
 
-### Post-onboard (Liên tục)
-- Content plan: **Hàng tháng/Quý**
-- Optimize shop (Membership, Merchandise): **Hàng tháng/Quý**
-- Revise & Analyze: **Hàng tháng/Quý**
+1. Push code lên GitHub
+2. Kết nối repository với [Vercel](https://vercel.com)
+3. Cấu hình environment variables trên Vercel:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+4. Vercel tự động deploy khi bạn push code
+
+**Kết quả**: Trang web chạy trên Vercel, dữ liệu lưu trên Supabase, và các user có thể nhìn thấy thay đổi real-time từ những user khác!
+
+## � Troubleshooting
+
+### Lỗi: `NEXT_PUBLIC_SUPABASE_URL is not defined`
+**Giải pháp**: Kiểm tra file `.env.local`:
+- Đảm bảo đã tạo file `.env.local` ở thư mục gốc (cùng thư mục với `package.json`)
+- Kiểm tra đúng tên biến: `NEXT_PUBLIC_SUPABASE_URL` (không phải `REACT_APP_...`)
+- Restart dev server sau khi thay đổi `.env.local`
+
+### Lỗi: Real-time sync không hoạt động
+**Giải pháp**: 
+- Vào Supabase console → **Database → Replication**
+- Kiểm tra xem bảng `notes` đã được bật Realtime chưa (có biểu tượng ✓ xanh)
+- ⚠️ **Lưu ý**: Chỉ bật cho TABLE, không phải VIEW
+
+### Lỗi: `Error loading data: PostgreSQL error`
+**Giải pháp**:
+- Kiểm tra **Row Level Security (RLS)** có được cấu hình đúng không
+- Xem console.log của trình duyệt để biết chi tiết lỗi
+- Kiểm tra policies trong bảng `notes` có được tạo đúng không
+
+### Bảng `notes` không xuất hiện
+**Giải pháp**:
+- Vào Supabase SQL Editor
+- Chạy code từ file `supabase_migrations.sql` để tạo bảng
+- Kiểm tra xem bảng `notes` đã xuất hiện trong **Database → Tables** chưa
+
+## 💡 Các tính năng có thể phát triển tiếp
+
+- [ ] Authentication (đăng nhập)
+- [ ] Comment/Notes trên từng task
+- [ ] File upload (attachments)
+- [ ] Audit log / History
+- [ ] Email notifications
+- [ ] Mobile app (React Native)
 
 ## 📁 Cấu trúc thư mục
 
 ```
 bstage-checklist/
-├── index.html              # File chính (Dashboard tương tác)
-├── README.md               # File hướng dẫn này
-├── .gitignore              # Cấu hình Git
-└── assets/                 # (Tùy chọn) Thư mục cho hình ảnh, CSS, JS nếu cần
+├── index.html                      # File HTML cũ (có thể xóa)
+├── notes/
+│   ├── page.tsx                   # Next.js App Router page (React component chính)
+│   └── page.css                   # Styling cho trang
+├── utils/supabase/
+│   ├── client.ts                  # Supabase client-side
+│   ├── server.ts                  # Supabase server-side
+│   └── middleware.ts              # Next.js middleware
+├── supabase_migrations.sql        # SQL để setup database
+├── package.json                   # Dependencies
+├── README.md                       # File hướng dẫn này
+└── .env.local                      # Environment variables (create this locally)
 ```
 
 ## 🔧 Công nghệ sử dụng
 
-- **HTML5**: Cấu trúc trang web
+- **Next.js 14+**: Framework React với App Router
+- **React 18+**: UI library
+- **Supabase**: Backend, Database, Real-time
+- **TypeScript/JavaScript**: Ngôn ngữ lập trình
 - **CSS3**: Thiết kế giao diện (Gradient, Flexbox, Animation)
-- **JavaScript (Vanilla)**: Tính toán tiến độ, lưu trữ dữ liệu cục bộ (LocalStorage)
 
-## 💾 Lưu trữ dữ liệu
+## 💾 Lưu trữ dữ liệu - "The Golden Triangle"
 
-Tất cả dữ liệu về tiến độ công việc được lưu trữ trong **LocalStorage** của trình duyệt. Điều này có nghĩa:
+```
+┌─────────────┐        ┌──────────┐        ┌──────────────┐
+│   GitHub    │───────▶│  Vercel  │       │  Supabase    │
+│  (Code)     │        │(Website) │◀──────│ (Database)   │
+└─────────────┘        └──────────┘        └──────────────┘
+                              │
+                              │
+                        Người dùng thao tác
+                              │
+                              ▼
+                        Real-time Sync
+```
 
-- ✓ Dữ liệu được lưu cục bộ trên máy của bạn
-- ✓ Không cần kết nối internet để sử dụng
+1. **Code** được lưu trên GitHub
+2. **Website** chạy trên Vercel (từ GitHub)
+3. **Database & Dữ liệu** được lưu trên Supabase
+4. Khi user A thay đổi checklist → Supabase cập nhật → Supabase thông báo cho user B → User B thấy thay đổi ngay lập tức (không cần F5)
+
+**Lợi ích so với phiên bản cũ (localStorage)**:
+- ✓ Dữ liệu không bị mất khi xóa browser cache
+- ✓ Có thể truy cập từ bất kỳ thiết bị/trình duyệt nào
+- ✓ Tự động đồng bộ giữa các team member
+- ✓ Có thể xem lịch sử thay đổi (audit log)
 - ✓ Dữ liệu sẽ được giữ lại khi bạn đóng và mở lại trình duyệt
 - ⚠️ Nếu bạn xóa dữ liệu trình duyệt, tiến độ sẽ bị xóa
 
