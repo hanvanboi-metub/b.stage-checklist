@@ -1,0 +1,12 @@
+[
+  {
+    "id": "bs_17123456789",
+    "name": "Artist A - B.Stage Setup",
+    "checks": [true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+  },
+  {
+    "id": "bs_17123456790",
+    "name": "Artist B - Launching",
+    "checks": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+  }
+]
